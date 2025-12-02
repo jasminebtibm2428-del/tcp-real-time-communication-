@@ -1,0 +1,88 @@
+# server.py
+import socket
+
+server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+server.bind(("0.0.0.0", 12345))
+server.listen(5)
+
+print("Server started. Waiting for client...")
+client_socket, addr = server.accept()
+print(f"Connected to {addr}")
+
+while True:
+    message = client_socket.recv(1024).decode()
+    
+    if not message:
+        break
+
+    if message.lower() == 'bye':
+        print("Client disconnected.")
+        break
+
+    print("Client:", message)
+
+    reply = input("You: ")
+    client_socket.send(reply.encode())
+
+client_socket.close()
+server.close()
+
+
+# client.py
+import socket
+
+client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+server_ip = input("Enter server IP address: ")
+
+client.connect((server_ip, 12345))
+
+while True:
+    message = input("You: ")
+    client.send(message.encode())
+
+    if message.lower() == 'bye':
+        break
+
+    reply = client.recv(1024).decode()
+    print("Server:", reply)
+
+client.close()
+
+
+# README.md
+"""
+# TCP Real-Time Communication (Python Sockets)
+
+This project demonstrates simple real-time communication between a server and client using TCP sockets in Python.
+
+## Files
+- **server.py** — Runs a TCP server, waits for client, and exchanges messages.
+- **client.py** — Connects to the server and allows two-way chat.
+
+## How to Run
+### 1. Start Server
+```bash
+python server.py
+```
+You will see:
+```
+Server started. Waiting for client...
+```
+
+### 2. Start Client
+```bash
+python client.py
+```
+Enter the **server's IP address** when asked.
+
+## Chat Commands
+- Type any message and press Enter to send it.
+- Type **bye** to disconnect.
+
+## Requirements
+- Python 3+ installed
+
+## Notes
+- Both devices must be on the **same WiFi network** (LAN communication).
+- Works well for PPT, academic demos, and socket programming examples.
+"""
